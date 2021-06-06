@@ -1,5 +1,5 @@
 library(shiny)
-library(leaflet)
+
 
 fluidPage(
 headerPanel(h1(strong("Restaurant Seat Capacity"))),
@@ -20,9 +20,9 @@ headerPanel(h1(strong("Restaurant Seat Capacity"))),
             
             # Checkbox for user to select restaurant type
             h5(strong("Restaurant type")),
-            checkboxInput("caf_res", "Cafes and Restaurants", value = TRUE),
-            checkboxInput("pub", "Pubs, Taverns and Bars", value = TRUE),
-            checkboxInput("takeaway", "Takeaway Food Services", value = TRUE),
+            checkboxInput("caf_res_c", "Cafes and Restaurants", value = TRUE),
+            checkboxInput("pub_c", "Pubs, Taverns and Bars", value = TRUE),
+            checkboxInput("takeaway_c", "Takeaway Food Services", value = TRUE),
             
             # Sidebar width
             width=4),
@@ -44,22 +44,22 @@ headerPanel(h1(strong("Restaurant Seat Capacity"))),
             sliderInput("year", "Year", min=2002, max=2019, value=1, sep="", animate=TRUE),
             
             # For user to select type of restaurant to display
-            radioButtons("type", "Restaurant type", 
-                         choices = list("All" = "all",
-                                        "Cafes and Restaurants" = "caf_res", 
-                                        "Pubs, Taverns and Bars" = "pub",
-                                        "Takeaway Food Services" = "takeaway"),
-                         selected = "all"),
+            radioButtons("res_type", "Restaurant type", 
+                         choices = list("All" = "all_r1",
+                                        "Cafes and Restaurants" = "caf_res_r1", 
+                                        "Pubs, Taverns and Bars" = "pub_r1",
+                                        "Takeaway Food Services" = "takeaway_r1"),
+                         selected = "all_r1"),
             
             # For user to select type of seating
-            radioButtons("type", "Restaurant type", 
-                         choices = list("All" = "all",
-                                        "Indoor" = "indoor", 
-                                        "Outdoor" = "outdoor"),
-                         selected = "all")
+            radioButtons("seat_type", "Seating type", 
+                         choices = list("All" = "all_r2",
+                                        "Indoor" = "indoor_r2", 
+                                        "Outdoor" = "outdoor_r2"),
+                         selected = "all_r2")
             ),
           mainPanel(
-            "Display visualisation" #TODO: add visualisation
+            plotOutput("seat_change")
           )
         )
       )
