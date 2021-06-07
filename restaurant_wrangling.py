@@ -77,3 +77,21 @@ seat_2019.reset_index(inplace=True, drop=True)
 
 # Output location data in CSV file
 seat_2019.to_csv('clean_restaurants_seats.csv', index=False)
+
+
+# Descriptive stat for restaurant seating capacity
+select_col = ['year', 'suburb', 'res_type', 'seat_indoor', 'seat_outdoor']
+seat_des = seat_df[select_col]
+
+# Merge West Melbourne (Industrial) and West Melbourne (Residential)
+seat_des['suburb'].replace({'West Melbourne (Industrial)':'West Melbourne',
+                  'West Melbourne (Residential)':'West Melbourne'}, inplace=True)
+
+# Sum the seat number by year and suburb
+seat_des = seat_des.groupby(['year', 'suburb', 'res_type']).sum().reset_index()
+
+# Add sum column that sum all indoor and outdoor seats
+seat_des['all_seat'] = seat_des['seat_indoor'] + seat_des['seat_outdoor']
+
+# Output the stat in CSV file
+seat_des.to_csv('restaurants_seats_stat.csv', index=False)
