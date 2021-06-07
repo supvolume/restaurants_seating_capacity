@@ -12,6 +12,10 @@ res_data <- filter(seat_data, res_type == "Cafes and Restaurants")
 pub_data <- filter(seat_data, res_type == "Pubs, Taverns and Bars")
 take_data <- filter(seat_data, res_type == "Takeaway Food Services")
 
+# Manage the data to display in the second tab
+# Read data
+stat_data <- read.csv("restaurants_seats_stat.csv", header = TRUE)
+
 
 # SERVER
 function(input, output, session){
@@ -40,7 +44,7 @@ function(input, output, session){
   # Create the map marker styles
   # For cafes and restaurants
   caf_icons <- awesomeIcons(
-    icon =  "fa-cutlery",
+    icon = "fa-cutlery",
     iconColor = "#FFFFFF",
     library = "fa",
     markerColor = "lightred"
@@ -48,7 +52,7 @@ function(input, output, session){
   
   # For pubs, taverns and bars
   pub_icons <- awesomeIcons(
-    icon =  "fa-glass",
+    icon = "fa-glass",
     iconColor = "#FFFFFF",
     library = "fa",
     markerColor = "cadetblue"
@@ -56,7 +60,7 @@ function(input, output, session){
   
   # For takeaway food services
   take_icons <- awesomeIcons(
-    icon =  "fa-shopping-bag",
+    icon = "fa-shopping-bag",
     iconColor = "#FFFFFF",
     library = "fa",
     markerColor = "lightgreen"
@@ -130,7 +134,76 @@ function(input, output, session){
   
   # SECOND TAB
   output$seat_change <- renderPlot({
-    # TODO: create bar graph
+    stat_year <- filter(stat_data, year == input$year)
+    
+    # When all type of restaurants is selected
+    if(input$res_type == "all_r1"){
+      if(input$seat_type == "all_r2"){
+        stat_sum <- aggregate(stat_year$all_seat, 
+                              by=list(stat_year$suburb), FUN=sum)
+      }else if(input$seat_type == "indoor_r2"){
+        stat_sum <- aggregate(stat_year$seat_indoor, 
+                              by = list(stat_year$suburb), FUN=sum)
+      }else if(input$seat_type == "outdoor_r2"){
+        stat_sum <- aggregate(stat_year$seat_outdoor, 
+                              by = list(stat_year$suburb), FUN=sum)
+      }
+      # Rename columns
+      stat_sum <- setNames(stat_sum, c("x", "y"))
+      
+      # When specific type of restaurant is selected
+    }else{
+      # Restaurant type
+      if(input$res_type == "caf_res_r1"){
+        stat_sum <- filter(stat_year, res_type == "Cafes and Restaurants")
+      }else if(input$res_type == "pub_r1"){
+        stat_sum <- filter(stat_year, res_type == "Pubs, Taverns and Bars")
+      }else if(input$res_type == "takeaway_r1"){
+        stat_sum <- filter(stat_year, res_type == "Takeaway Food Services")
+      }
+      
+      # Seating type
+      if(input$seat_type == "all_r2"){
+        stat_sum <- stat_sum %>% select(suburb, all_seat)
+      }else if(input$seat_type == "indoor_r2"){
+        stat_sum <- stat_sum %>% select(suburb, seat_indoor)
+      }else if(input$seat_type == "outdoor_r2"){
+        stat_sum <- stat_sum %>% select(suburb, seat_outdoor)
+      }  
+      # Rename columns
+      stat_sum <- setNames(stat_sum, c("x", "y"))
+    }
+    
+    # Reorder the axis
+    # Reference: https://stackoverflow.com/a/5210833
+    stat_sum <- within(stat_sum, 
+                       x <- factor(x, levels = c("West Melbourne",
+                                                 "Southbank",
+                                                 "South Yarra",
+                                                 "Port Melbourne",
+                                                 "Parkville",
+                                                 "North Melbourne",
+                                                 "Melbourne (Remainder)",
+                                                 "Melbourne (CBD)",
+                                                 "Kensington",
+                                                 "East Melbourne",
+                                                 "Docklands",
+                                                 "Carlton")))
+    
+    # Plot graph
+    res_plot <- ggplot(data = stat_sum, aes(y, x)) + 
+                  geom_bar(stat="identity", fill = "#e1701a") +
+                  labs(x="Number of seats", y = "") +
+                  scale_y_discrete(drop = FALSE) +
+                  theme_minimal() 
+    
+    # Fixed the scale
+    if(input$fixed_axis == "fixed"){
+      res_plot <- res_plot + xlim(0, 100000)
+    }
+    
+    # Display the plot
+    res_plot
   })
   
 }

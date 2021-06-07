@@ -1,5 +1,5 @@
 library(shiny)
-
+library(leaflet)
 
 fluidPage(
 headerPanel(h1(strong("Restaurant Seat Capacity"))),
@@ -56,7 +56,13 @@ headerPanel(h1(strong("Restaurant Seat Capacity"))),
                          choices = list("All" = "all_r2",
                                         "Indoor" = "indoor_r2", 
                                         "Outdoor" = "outdoor_r2"),
-                         selected = "all_r2")
+                         selected = "all_r2"),
+            
+            # Option to fixed or unfixed axis
+            radioButtons("fixed_axis", "Fixed or unfixed the number of seat axis",
+                         choices = list("Fixed" = "fixed",
+                                        "Unfixed" = "unfixed"),
+                         selected = "fixed")
             ),
           mainPanel(
             plotOutput("seat_change")
