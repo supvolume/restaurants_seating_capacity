@@ -2,6 +2,7 @@
 Shiny application to display the seating capacity of restaurants in the City of Melbourne and the restaurants' location.
 
 Click [here](https://supida.shinyapps.io/restaurant_seating/) to view the demo.
+<p align="center"><img src="https://github.com/supvolume/restaurants_seating_capacity/blob/main/demo_image.png?raw=true"> </p>
 
 
 #### Files in this repository
